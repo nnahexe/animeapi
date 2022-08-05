@@ -137,23 +137,25 @@ const CharacterSearch = () => {
           "
           >
             {search &&
-              previewData.map(({ name }, idx) => {
-                return (
-                  <Text
-                    key={idx}
-                    onClick={() => handleFilterSearch(name)}
-                    _hover={{
-                      background: "white",
-                      color: "teal.500",
-                      cursor: "pointer",
-                      padding: "4px 0",
-                    }}
-                    color="#fff"
-                  >
-                    {name}
-                  </Text>
-                );
-              })}
+              previewData
+                .map(({ name }, idx) => {
+                  return (
+                    <Text
+                      key={idx}
+                      onClick={() => handleFilterSearch(name)}
+                      _hover={{
+                        background: "white",
+                        color: "teal.500",
+                        cursor: "pointer",
+                        padding: "4px 0",
+                      }}
+                      color="#fff"
+                    >
+                      {name}
+                    </Text>
+                  );
+                })
+                .slice(0, 10)}
           </Box>
         )}
       </Container>
