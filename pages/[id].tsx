@@ -3,7 +3,14 @@ import { getMoreCharacters } from "../utils/queries";
 import { useQuery, dehydrate, QueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { Box, Text, Button } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Button,
+  useMediaQuery,
+  Grid,
+  GridItem,
+} from "@chakra-ui/react";
 import Image from "next/image";
 import imageLoader from "../imageLoader";
 import Link from "next/link";
@@ -13,7 +20,10 @@ import React from "react";
 const NextCharacters = () => {
   const router = useRouter();
   //   defaults string value
-
+  const [isSmallerThan1500, isSmallerThan1750] = useMediaQuery([
+    "(max-width: 1500px)",
+    "(max-width: 1750px)",
+  ]);
   let pageID = typeof router.query.id === "string" && router.query.id;
   console.log(pageID);
 
@@ -31,13 +41,9 @@ const NextCharacters = () => {
   console.log(`page number ${nextPage}`);
   return (
     <>
-      <Box mt={20} className="centerH w-[1400px] mx-auto">
+      <Box className="centerH">
         <Button
-          disabled={+nextPage === 1}
-          onClick={() => {
-            setNextPage(+nextPage - 1);
-            router.push(`/${nextPage - 1}`);
-          }}
+          onClick={() => router.push(`/${nextPage - 1}`)}
           _hover={{
             background: "#D65DB1",
           }}
@@ -46,15 +52,11 @@ const NextCharacters = () => {
           p={6}
           w={200}
           mx={8}
+          m={4}
         >
           Prev
         </Button>
         <Button
-          disabled={+nextPage === 42}
-          onClick={() => {
-            setNextPage(+nextPage + 1);
-            router.push(`/${nextPage + 1}`);
-          }}
           _hover={{
             background: "#D65DB1",
           }}
@@ -62,19 +64,34 @@ const NextCharacters = () => {
           color="#fff"
           p={6}
           w={200}
+          mx={8}
+          onClick={() => router.push(`/${nextPage + 1}`)}
         >
           Next
         </Button>
       </Box>
-      <div className="centerH w-[1400px] mt-20 mx-auto flex-wrap">
+      <Grid
+        className="
+  
+   justify-items-center
+    content-evenly
+"
+        templateColumns={
+          isSmallerThan1500
+            ? "1fr"
+            : isSmallerThan1750
+            ? "repeat(2, 1fr)"
+            : "repeat(3, 1fr)"
+        }
+      >
         {data?.results.map(({ name, id, image }) => {
           return (
             <Link key={id} href={`/characters/${id}`}>
-              <Box
+              <GridItem
                 my={8}
                 mx={10}
                 p={10}
-                w={500}
+                w={isSmallerThan1500 ? 300 : 480}
                 className="cursor-pointer border-2 centerV rounded-lg border-violet-500"
               >
                 <Text fontSize="2xl" m={6}>
@@ -91,11 +108,11 @@ const NextCharacters = () => {
                   alt="api-img"
                   objectFit="cover"
                 />
-              </Box>
+              </GridItem>
             </Link>
           );
         })}
-      </div>
+      </Grid>
     </>
   );
 };

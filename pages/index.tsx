@@ -35,13 +35,39 @@ const Home = ({ characters }) => {
     "(max-width: 1750px)",
   ]);
 
-  // if (isError) {
-  //   return <div>Error: {error.message}</div>;
-  // }
-
   console.log(`page number ${page}`);
   return (
     <>
+      <Box className="centerH">
+        <Button
+          onClick={() => router.push(`/${page - 1}`)}
+          _hover={{
+            background: "#D65DB1",
+          }}
+          bg="#845EC2"
+          color="#fff"
+          p={6}
+          w={200}
+          mx={8}
+          m={4}
+        >
+          Prev
+        </Button>
+        <Button
+          _hover={{
+            background: "#D65DB1",
+          }}
+          bg="#845EC2"
+          color="#fff"
+          p={6}
+          w={200}
+          mx={8}
+          onClick={() => router.push(`/${page + 1}`)}
+        >
+          Next
+        </Button>
+      </Box>
+
       <Grid
         className="
   
@@ -63,7 +89,7 @@ const Home = ({ characters }) => {
                 my={8}
                 py={10}
                 px={8}
-                w={isSmallerThan1500 ? 300 : 450}
+                w={isSmallerThan1500 ? 300 : 480}
                 className="cursor-pointer border-2 centerV rounded-lg border-violet-500"
               >
                 <Text fontSize="2xl" m={6}>
