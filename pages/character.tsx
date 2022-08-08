@@ -182,7 +182,7 @@ const CharacterSearch = () => {
             }) => {
               return (
                 <Link key={id} href={`/characters/${id}`}>
-                  <GridItem className="centerV cursor-pointer">
+                  <GridItem className="cursor-pointer centerV">
                     <Heading py={4}>{name}</Heading>
                     <Image
                       src={image}

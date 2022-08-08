@@ -9,6 +9,7 @@ import {
   useMediaQuery,
   Grid,
   GridItem,
+  Heading,
   Container,
 } from "@chakra-ui/react";
 import Link from "next/link";
@@ -34,6 +35,10 @@ const Home = ({ characters }) => {
     "(max-width: 1500px)",
     "(max-width: 1750px)",
   ]);
+
+  if (!characters) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -65,10 +70,19 @@ const Home = ({ characters }) => {
           mx={8}
           onClick={() => router.push(`/${page + 1}`)}
         >
-          Next
+          Load More
         </Button>
       </Box>
-
+      <Heading
+        as="h2"
+        fontSize="5xl"
+        fontWeight={400}
+        color="purple.500"
+        py={10}
+        textAlign="center"
+      >
+        List of Characters
+      </Heading>
       <Grid
         className="
   
@@ -85,7 +99,7 @@ const Home = ({ characters }) => {
       >
         {characters.map(({ name, id, image }) => {
           return (
-            <Link key={id} href={`/${id}`}>
+            <Link key={id} href={`/characters/${id}`}>
               <GridItem
                 my={8}
                 py={10}
@@ -121,14 +135,18 @@ export default Home;
 // list all characters 826 by id
 // 20 characters each page default
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps = async ({ params }) => {
   // const allCharactersArray = Array.from(new Array(826).keys()).map(
   //   (i, idx) => idx + 1
   // );
 
+  const pathId = params?.id || 1;
+
   // console.log(allCharactersArray);
 
-  const { data } = await axios.get(`https://rickandmortyapi.com/api/character`);
+  const { data } = await axios.get(
+    `https://rickandmortyapi.com/api/character/?page=${pathId}`
+  );
   return {
     props: {
       characters: data.results,

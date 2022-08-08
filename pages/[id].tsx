@@ -42,7 +42,7 @@ const NextCharacters = () => {
   if (!data) {
     return <div>Loading...</div>;
   }
-  console.log(`the next page is ${nextPage}`);
+  // console.log(`the next page is ${nextPage}`);
 
   return (
     <>
@@ -51,7 +51,7 @@ const NextCharacters = () => {
           disabled={nextPage === 1}
           onClick={() => {
             setNextPage(nextPage - 1);
-            router.push(`/${nextPage}`);
+            router.push(`/${nextPage - 1}`);
           }}
           _hover={{
             background: "#D65DB1",
@@ -76,7 +76,7 @@ const NextCharacters = () => {
           mx={8}
           onClick={() => {
             setNextPage(nextPage + 1);
-            router.push(`/${nextPage}`);
+            router.push(`/${nextPage + 1}`);
           }}
         >
           Next
@@ -98,7 +98,7 @@ const NextCharacters = () => {
       >
         {data?.results.map(({ name, id, image }) => {
           return (
-            <Link key={id} href={`/characters/${id}`}>
+            <Link href={`/characters/${id}`}>
               <GridItem
                 my={8}
                 mx={10}

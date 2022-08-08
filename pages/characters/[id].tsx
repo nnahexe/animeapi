@@ -6,7 +6,6 @@ import axios from "axios";
 import Image from "next/image";
 import imageLoader from "../../imageLoader";
 import { useState, useEffect } from "react";
-
 import { useQuery, dehydrate, QueryClient } from "@tanstack/react-query";
 // interfaces
 import { GetCharacterResults, Info } from "../../types";
@@ -22,58 +21,80 @@ chakra ui practice
 
 */
 // array of id's
-const getEpisodes = async (episodeIds) => {
-  return await axios.get(
-    `https://rickandmortyapi.com/api/episode/${episodeIds}`
-  );
-};
 
-const CharacterPage = ({ character }) => {
+const CharacterPage = () => {
   const router = useRouter();
   const paramID = router.query.id;
+  console.log(paramID);
+  const [characterDetail, setCharacterDetail] = useState(null);
 
   if (!paramID) {
     return <div>Loading...</div>;
   }
 
+  console.log("state...");
+  console.log(characterDetail);
+  // const {
+  //   id,
+  //   image,
+  //   episode: episodes,
+  //   location,
+  //   name,
+  //   origin,
+  //   species,
+  //   status,
+  // } = character;
+
+  // episode ids are different
+  // console.log(episodes);
+
+  // const episodeIds = episodes.map((episode) => {
+  //   return +episode.split("e/")[1];
+  // });
+  // console.log("flkdsfksdlflsj");
+  // console.log(episodeIds);
+
+  const { isLoading, error, data } = useQuery(
+    ["characterdetails", paramID],
+    () => getCharacterDetails(paramID)
+  );
+
   const {
+    episode: episodes,
+    gender,
     id,
     image,
-    episode: episodes,
     location,
     name,
     origin,
     species,
     status,
-  } = character;
+  } = data;
 
-  // episode ids are different
-  console.log(episodes);
+  console.log("under data");
 
-  const episodeIds = episodes.map((episode) => {
-    return +episode.split("e/")[1];
-  });
+  const episodeIds = episodes.map((e) => e.split("e/")[1]);
+  console.log(episodeIds);
 
-  const { isLoading, error, data } = useQuery(["episodes"], () =>
-    getEpisodes(episodeIds)
-  );
+  useEffect(() => {
+    apiData(episodeIds);
+  }, []);
 
+  const apiData = async (idArray) => {
+    const { data } = await axios.get(
+      `https://rickandmortyapi.com/api/episode/${idArray}`
+    );
+
+    setCharacterDetail(data);
+  };
+
+  if (!data) {
+    return <div>loading...</div>;
+  }
+
+  /*
   const renderEpisodes = () => {
-    if (
-      typeof data === "object" &&
-      typeof data !== null &&
-      !Array.isArray(data.data)
-    ) {
-      return (
-        <Box key={data.data.id}>
-          <Heading my={4} fontWeight={500}>
-            {data.data.name}
-          </Heading>
-          <Text fontSize="lg">{data.data.episode}</Text>
-          <Text fontSize="lg">{data.data.air_date}</Text>
-        </Box>
-      );
-    } else {
+
       return data?.data.map(({ id, name, air_date, episode, created }) => {
         return (
           <Box key={id}>
@@ -88,8 +109,24 @@ const CharacterPage = ({ character }) => {
     }
   };
 
+  */
+
+  const renderEpisodes = () => {
+    return characterDetail?.map((episode) => {
+      return (
+        <Box className="" key={episode.id}>
+          <Heading py={4} fontWeight={400}>
+            {episode.name}
+          </Heading>
+          <Text fontSize="lg">{episode.episode}</Text>
+          <Text fontSize="lg">{episode.air_date}</Text>
+        </Box>
+      );
+    });
+  };
+
   return (
-    <Box my={20} p={10} className=" centerV mx-auto" key={id}>
+    <Box my={20} p={10} className=" centerV mx-auto">
       <Heading m={4} as="h2" fontWeight={400}>
         {name}
       </Heading>
@@ -142,7 +179,7 @@ const CharacterPage = ({ character }) => {
           color="#2C73D2"
           className="font-bold"
         >
-          <span className="text-black font-medium">Origin:</span> {origin.name}
+          {/* <span className="text-black font-medium">Origin:</span> {origin.name} */}
         </Text>
         <Text
           fontWeight={500}
@@ -150,15 +187,22 @@ const CharacterPage = ({ character }) => {
           color="#2C73D2"
           className="font-bold"
         >
-          <span className="text-black font-medium">Episode Appearances:</span>{" "}
+          {/* <span className="text-black font-medium">Episode Appearances:</span>{" "} */}
         </Text>
-        {renderEpisodes()}
+        {/* {renderEpisodes()} */}
       </Flex>
     </Box>
   );
 };
 
 export default CharacterPage;
+
+const getCharacterDetails = async (id) => {
+  const { data } = await axios.get(
+    `https://rickandmortyapi.com/api/character/${id}`
+  );
+  return data;
+};
 
 export const getStaticPaths = async () => {
   const { data } = await axios.get("https://rickandmortyapi.com/api/character");
@@ -176,19 +220,18 @@ export const getStaticPaths = async () => {
   };
 };
 
-export const getStaticProps = async ({
-  params,
-}: {
-  params: { id: string };
-}) => {
-  const res = await fetch(
-    `https://rickandmortyapi.com/api/character/${params.id}`
-  );
+export const getStaticProps = async ({ params }) => {
+  // new client for each page request
+  const queryClient = new QueryClient();
+  const id = params?.id;
 
-  const character = await res.json();
+  await queryClient.prefetchQuery(["characterdetails", id], () =>
+    //   we started page 1 so add another
+    getCharacterDetails(id)
+  );
   return {
     props: {
-      character,
+      dehydratedState: dehydrate(queryClient),
     },
   };
 };
