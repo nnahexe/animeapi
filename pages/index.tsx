@@ -17,7 +17,8 @@ import { Character, GetCharacterResults } from "../types";
 // npx create-next-app@latest --ts
 // typescript props
 import { GetStaticProps, NextPage } from "next";
-// fix image on npm run build
+// fix image on npm run buildy
+
 import imageLoader from "../imageLoader";
 import { useState } from "react";
 import { useQuery, dehydrate, QueryClient } from "@tanstack/react-query";
@@ -26,21 +27,20 @@ import { useRouter } from "next/router";
 
 // next page proper types in SSG, SSR, ISR
 const Home = ({ characters }) => {
-  // console.log(characters);
   const [page, setPage] = useState(1);
   const router = useRouter();
-  console.log(router);
+
   const [isSmallerThan1500, isSmallerThan1750] = useMediaQuery([
     "(max-width: 1500px)",
     "(max-width: 1750px)",
   ]);
 
-  console.log(`page number ${page}`);
   return (
     <>
       <Box className="centerH">
         <Button
-          onClick={() => router.push(`/${page - 1}`)}
+          disabled={+page === 1}
+          onClick={() => router.push(`/${+page - 1}`)}
           _hover={{
             background: "#D65DB1",
           }}
@@ -54,6 +54,7 @@ const Home = ({ characters }) => {
           Prev
         </Button>
         <Button
+          disabled={+page === 2}
           _hover={{
             background: "#D65DB1",
           }}
@@ -84,7 +85,7 @@ const Home = ({ characters }) => {
       >
         {characters.map(({ name, id, image }) => {
           return (
-            <Link key={id} href={`/characters/${id}`}>
+            <Link key={id} href={`/${id}`}>
               <GridItem
                 my={8}
                 py={10}
@@ -117,8 +118,17 @@ const Home = ({ characters }) => {
 
 export default Home;
 
-export const getStaticProps: GetStaticProps = async (context) => {
-  const { data } = await axios.get("https://rickandmortyapi.com/api/character");
+// list all characters 826 by id
+// 20 characters each page default
+
+export const getStaticProps: GetStaticProps = async () => {
+  // const allCharactersArray = Array.from(new Array(826).keys()).map(
+  //   (i, idx) => idx + 1
+  // );
+
+  // console.log(allCharactersArray);
+
+  const { data } = await axios.get(`https://rickandmortyapi.com/api/character`);
   return {
     props: {
       characters: data.results,

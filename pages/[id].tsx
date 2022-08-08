@@ -24,26 +24,35 @@ const NextCharacters = () => {
     "(max-width: 1500px)",
     "(max-width: 1750px)",
   ]);
-  let pageID = typeof router.query.id === "string" && router.query.id;
-  console.log(pageID);
 
-  const [nextPage, setNextPage] = useState(+pageID);
+  let pageID = typeof router.query.id === "string" && router.query.id;
+
+  const [nextPage, setNextPage] = useState(parseInt(pageID));
+
   const { data, isPreviousData } = useQuery(
-    ["morecharacters", pageID],
+    ["morecharacters", +pageID],
     //  // in dynamic route we start back at 1 so we add another to go page 2
-    () => getMoreCharacters(pageID + 1),
+    () => getMoreCharacters(+pageID + 1)
     // refetch
-    { enabled: pageID.length > 1 }
+    // { enabled: pageID.length > 1 }
   );
 
-  console.log(nextPage);
+  console.log(data);
 
-  console.log(`page number ${nextPage}`);
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+  console.log(`the next page is ${nextPage}`);
+
   return (
     <>
       <Box className="centerH">
         <Button
-          onClick={() => router.push(`/${nextPage - 1}`)}
+          disabled={nextPage === 1}
+          onClick={() => {
+            setNextPage(nextPage - 1);
+            router.push(`/${nextPage}`);
+          }}
           _hover={{
             background: "#D65DB1",
           }}
@@ -65,7 +74,10 @@ const NextCharacters = () => {
           p={6}
           w={200}
           mx={8}
-          onClick={() => router.push(`/${nextPage + 1}`)}
+          onClick={() => {
+            setNextPage(nextPage + 1);
+            router.push(`/${nextPage}`);
+          }}
         >
           Next
         </Button>
@@ -128,7 +140,7 @@ export const getStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false,
+    fallback: true,
   };
 };
 

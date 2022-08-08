@@ -2,6 +2,7 @@ import "../styles/globals.css";
 import Layout from "./components/Layout";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "../utils/theme";
+
 import {
   QueryClientProvider,
   QueryClient,
