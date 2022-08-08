@@ -6,53 +6,19 @@ import axios from "axios";
 import Image from "next/image";
 import imageLoader from "../../imageLoader";
 import { useState, useEffect } from "react";
+import React from "react";
+import { getEpisodes } from "../../utils/queries";
 import { useQuery, dehydrate, QueryClient } from "@tanstack/react-query";
 // interfaces
-import { GetCharacterResults, Info } from "../../types";
+import { EpisodeProps } from "../../types";
 
-// rick and morty api is paginated defaults to 20 characters
-/*
-TODOS 
-ssr (context.query.id) in ssg(context.params.id)
-typescript crash course
-https://www.youtube.com/watch?v=jrKcJxF0lAU
-chakra ui practice
- todo add pagination more than 20 characters
-
-*/
-// array of id's
-
-const CharacterPage = () => {
+const CharacterPage: React.FC = () => {
   const router = useRouter();
   const paramID = router.query.id;
-  console.log(paramID);
-  const [characterDetail, setCharacterDetail] = useState(null);
 
   if (!paramID) {
     return <div>Loading...</div>;
   }
-
-  console.log("state...");
-  console.log(characterDetail);
-  // const {
-  //   id,
-  //   image,
-  //   episode: episodes,
-  //   location,
-  //   name,
-  //   origin,
-  //   species,
-  //   status,
-  // } = character;
-
-  // episode ids are different
-  // console.log(episodes);
-
-  // const episodeIds = episodes.map((episode) => {
-  //   return +episode.split("e/")[1];
-  // });
-  // console.log("flkdsfksdlflsj");
-  // console.log(episodeIds);
 
   const { isLoading, error, data } = useQuery(
     ["characterdetails", paramID],
@@ -71,58 +37,52 @@ const CharacterPage = () => {
     status,
   } = data;
 
-  console.log("under data");
-
   const episodeIds = episodes.map((e) => e.split("e/")[1]);
   console.log(episodeIds);
 
-  useEffect(() => {
-    apiData(episodeIds);
-  }, []);
+  const { data: episodeData } = useQuery(["episodes", episodeIds], () =>
+    getEpisodes(episodeIds)
+  );
 
-  const apiData = async (idArray) => {
-    const { data } = await axios.get(
-      `https://rickandmortyapi.com/api/episode/${idArray}`
-    );
-
-    setCharacterDetail(data);
-  };
-
-  if (!data) {
+  console.log("-query");
+  console.log(episodeData);
+  if (!data || !episodeData) {
     return <div>loading...</div>;
   }
 
-  /*
+  // ("JSX.Element[]");
   const renderEpisodes = () => {
-
-      return data?.data.map(({ id, name, air_date, episode, created }) => {
-        return (
-          <Box key={id}>
-            <Heading my={4} fontWeight={500} fontSize="3xl">
-              {name}
-            </Heading>
-            <Text fontSize="lg">Episode: {episode}</Text>
-            <Text fontSize="lg">Air Date: {air_date}</Text>
-          </Box>
-        );
-      });
-    }
-  };
-
-  */
-
-  const renderEpisodes = () => {
-    return characterDetail?.map((episode) => {
+    if (
+      typeof episodeData === "object" &&
+      episodeData !== null &&
+      !Array.isArray(episodeData)
+    ) {
+      console.log("is an object");
       return (
-        <Box className="" key={episode.id}>
+        <Box key={episodeData.id}>
           <Heading py={4} fontWeight={400}>
-            {episode.name}
+            {episodeData.name}
           </Heading>
-          <Text fontSize="lg">{episode.episode}</Text>
-          <Text fontSize="lg">{episode.air_date}</Text>
+          <Text fontSize="lg">{episodeData.episode}</Text>
+          <Text fontSize="lg">{episodeData.air_date}</Text>
         </Box>
       );
-    });
+    } else {
+      console.log("is an array");
+      return (
+        <Box>
+          {episodeData.map((episode) => {
+            return (
+              <Box key={episode.id}>
+                <Heading fontWeight={400}>{episode.name}</Heading>
+                <Text fontSize="lg">{episode.episode}</Text>
+                <Text fontSize="lg">{episode.air_date}</Text>
+              </Box>
+            );
+          })}
+        </Box>
+      );
+    }
   };
 
   return (
@@ -189,7 +149,7 @@ const CharacterPage = () => {
         >
           {/* <span className="text-black font-medium">Episode Appearances:</span>{" "} */}
         </Text>
-        {/* {renderEpisodes()} */}
+        {renderEpisodes()}
       </Flex>
     </Box>
   );

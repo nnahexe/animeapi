@@ -4,6 +4,22 @@ export interface GetCharacterResults {
   results: Character[];
 }
 
+export interface CharacterDetailProps {
+  details: {
+    air_date: string;
+    episode: string;
+    id: number;
+    name: string;
+  }[];
+}
+
+export interface EpisodeProps {
+  air_date: string;
+  episode: string;
+  id: number;
+  name: string;
+}
+
 // for pagination
 export interface Info {
   count: number;

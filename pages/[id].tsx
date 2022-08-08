@@ -14,27 +14,21 @@ import {
 import Image from "next/image";
 import imageLoader from "../imageLoader";
 import Link from "next/link";
-
 import React from "react";
 
 const NextCharacters = () => {
   const router = useRouter();
-  //   defaults string value
   const [isSmallerThan1500, isSmallerThan1750] = useMediaQuery([
     "(max-width: 1500px)",
     "(max-width: 1750px)",
   ]);
 
   let pageID = typeof router.query.id === "string" && router.query.id;
-
   const [nextPage, setNextPage] = useState(parseInt(pageID));
-
   const { data, isPreviousData } = useQuery(
     ["morecharacters", +pageID],
     //  // in dynamic route we start back at 1 so we add another to go page 2
     () => getMoreCharacters(+pageID + 1)
-    // refetch
-    // { enabled: pageID.length > 1 }
   );
 
   console.log(data);
@@ -84,7 +78,6 @@ const NextCharacters = () => {
       </Box>
       <Grid
         className="
-  
    justify-items-center
     content-evenly
 "
@@ -98,7 +91,7 @@ const NextCharacters = () => {
       >
         {data?.results.map(({ name, id, image }) => {
           return (
-            <Link href={`/characters/${id}`}>
+            <Link key={id} href={`/characters/${id}`}>
               <GridItem
                 my={8}
                 mx={10}

@@ -17,3 +17,10 @@ export const getCharacterDetails = async (id) => {
   );
   return data;
 };
+
+export const getEpisodes = async (episodeArr) => {
+  const { data } = await axios.get(
+    `https://rickandmortyapi.com/api/episode/${episodeArr}`
+  );
+  return data;
+};

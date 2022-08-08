@@ -26,11 +26,9 @@ import { useQuery, dehydrate, QueryClient } from "@tanstack/react-query";
 import { getMoreCharacters } from "../utils/queries";
 import { useRouter } from "next/router";
 
-// next page proper types in SSG, SSR, ISR
 const Home = ({ characters }) => {
   const [page, setPage] = useState(1);
   const router = useRouter();
-
   const [isSmallerThan1500, isSmallerThan1750] = useMediaQuery([
     "(max-width: 1500px)",
     "(max-width: 1750px)",
@@ -136,14 +134,7 @@ export default Home;
 // 20 characters each page default
 
 export const getStaticProps = async ({ params }) => {
-  // const allCharactersArray = Array.from(new Array(826).keys()).map(
-  //   (i, idx) => idx + 1
-  // );
-
   const pathId = params?.id || 1;
-
-  // console.log(allCharactersArray);
-
   const { data } = await axios.get(
     `https://rickandmortyapi.com/api/character/?page=${pathId}`
   );
