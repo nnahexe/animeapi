@@ -21,7 +21,7 @@ const Header = () => {
       >
         <Box color="#fff" className={isSmallerThan400 ? "centerV" : "centerH"}>
           <Heading mx={2} textAlign="center" as="h2">
-            Rick and Morty API
+            AnimeList API
           </Heading>
           <Icon
             style={{ display: isSmallerThan400 ? "none" : "block" }}

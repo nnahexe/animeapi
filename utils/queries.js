@@ -1,26 +1,21 @@
 import axios from "axios";
 
-export const getMoreCharacters = async (page = 1) => {
+export const getPopularAnimes = async () => {
   const { data } = await axios.get(
-    `https://rickandmortyapi.com/api/character/?page=${page}`
-  );
-
-  // console.log(data);
-
-  return data;
-};
-
-export const getCharacterDetails = async (id) => {
-  // console.log(id);
-  const { data } = await axios.get(
-    `https://rickandmortyapi.com/api/character/${id}`
+    `https://api.jikan.moe/v4/top/anime/?limit=50`
   );
   return data;
 };
 
-export const getEpisodes = async (episodeArr) => {
+export const getMoreAnimes = async (page = 2) => {
   const { data } = await axios.get(
-    `https://rickandmortyapi.com/api/episode/${episodeArr}`
+    `https://api.jikan.moe/v4/top/anime?page=${page}`
   );
-  return data;
+  return data.data;
+};
+
+export const getAnimeDetails = async (id) => {
+  const { data } = await axios.get(`https://api.jikan.moe/v4/anime/${id}`);
+  console.log(data);
+  return data.data;
 };
