@@ -17,15 +17,18 @@ const AnimeDetails = () => {
     error,
     isLoading,
   } = useQuery(["animedetails", id], () => getAnimeDetails(id));
-  if (!animeDetails) {
+  if (isLoading) {
     return <div>loading...</div>;
   }
   return (
-    <Flex py={20} className="centerV">
-      <Heading fontSize="5xl" color="blue.500">
+    <Flex width="1000px" mx="auto" py={20} className="centerV">
+      <Heading textAlign="center" fontSize="5xl" color="blue.500">
         {animeDetails.title}
       </Heading>
-      <Flex py={4} className="centerH">
+      <Text py={4} fontSize="3xl" color="gray.500">
+        ID: {animeDetails.mal_id}
+      </Text>
+      <Flex className="centerH">
         <Heading py={4} px={4} fontSize="4xl" color="blue.500">
           Genres
         </Heading>
